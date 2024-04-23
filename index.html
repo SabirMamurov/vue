@@ -11,21 +11,27 @@
     <title>Product App</title>
 </head>
 <body>
+<div class="nav-bar"></div>
+
 <div id="app">
 
     <div class="product">
 
         <div class="product-image">
-            <img :src="image" :alt="altText" />
+            <img :src="image" />
         </div>
 
         <div class="product-info">
             <h1>{{ product }}</h1>
-            <a :href="link" target="_blank">More products like this</a>
+            <p v-if="inStock">In Stock</p>
+            <p v-else>Out of Stock</p>
+            <span v-if="onSale">On Sale!</span>
         </div>
 
     </div>
+
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
 </body>
 </html>
