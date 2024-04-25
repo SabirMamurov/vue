@@ -5,38 +5,45 @@ Vue.component('product', {
             required: true
         }
     },
-
-template: `
+    template: `
    <div class="product">
-        <div class="product-image">
-            <img :src="image" :alt="altText"/>
-        </div>
+    <div class="product-image">
+           <img :src="image" :alt="altText"/>
+       </div>
 
-        <div class="product-info">
-            <h1>{{ title }}</h1>
-            <p v-if="inStock">In stock</p>
-            <p v-else>Out of Stock</p>
-            <product-details></product-details>
-             <p>Shipping: {{ shipping }}</p>
-            <div
-                    class="color-box"
-                    v-for="(variant, index) in variants"
-                    :key="variant.variantId"
-                    :style="{ backgroundColor:variant.variantColor }"
-                    @mouseover="updateProduct(index)"
-            ></div>
-            <div class="cart">
-                <p>Cart({{ cart }})</p>
-            </div>
-            <button
-                    v-on:click="addToCart"
-                    :disabled="!inStock"
-                    :class="{ disabledButton: !inStock }"
-            >
-                Add to cart
-            </button>
-        </div>
-    </div>
+       <div class="product-info">
+           <h1>{{ title }}</h1>
+           <p v-if="inStock">In stock</p>
+           <p v-else>Out of Stock</p>
+           <ul>
+               <li v-for="detail in details">{{ detail }}</li>
+           </ul>
+          <p>Shipping: {{ shipping }}</p>
+           <div
+                   class="color-box"
+                   v-for="(variant, index) in variants"
+                   :key="variant.variantId"
+                   :style="{ backgroundColor:variant.variantColor }"
+                   @mouseover="updateProduct(index)"
+           ></div>
+
+           <button
+                   v-on:click="addToCart"
+                   :disabled="!inStock"
+                   :class="{ disabledButton: !inStock }"
+           >
+               Add to cart
+           </button>
+           <button
+                   v-on:click="deleteToCart"
+                   :class="{ disabledButton: !inStock }"
+           >
+               Delete to cart
+           </button>
+           
+            
+       </div>
+   </div>
  `,
     data() {
         return {
@@ -59,55 +66,59 @@ template: `
                     variantQuantity: 0
                 }
             ],
-            cart: 0 }
-        },
-        methods: {
-            addToCart() {
-                this.cart += 1
-            },
-            updateProduct(index) {
-                this.selectedVariant = index;
-                console.log(index);
-            }
-        },
-        computed: {
-            title() {
-                return this.brand + ' ' + this.product;
-            },
-            image() {
-                return this.variants[this.selectedVariant].variantImage;
-            },
-            inStock(){
-                return this.variants[this.selectedVariant].variantQuantity
-            },
-            shipping() {
-                if (this.premium) {
-                    return "Free";
-                } else {
-                    return 2.99
-                }
-            }
-
+            cart: 0
         }
-})
+    },
+    methods: {
+        addToCart() {
+            this.$emit('add-to-cart',
+            this.variants[this.selectedVariant].variantId);
+        },
 
-Vue.component('product-details', {
-    template:`
-    <ul>
-        <li v-for="detail in details">{{ detail }}</li>
-    </ul>
-`,
-    data() {
-        return {
-            details: ['80% cotton', '20% polyester', 'Gender-neutral']
+        deleteToCart() {
+            this.$emit('delete-to-cart',
+                this.variants[this.selectedVariant].variantId);
+        },
+
+        updateProduct(index) {
+            this.selectedVariant = index;
+            console.log(index);
+        }
+    },
+    computed: {
+        title() {
+            return this.brand + ' ' + this.product;
+        },
+        image() {
+            return this.variants[this.selectedVariant].variantImage;
+        },
+        inStock() {
+            return this.variants[this.selectedVariant].variantQuantity
+        },
+        shipping() {
+            if (this.premium) {
+                return "Free";
+            } else {
+                return 2.99
+            }
         }
     }
 })
-
-
 let app = new Vue({
     el: '#app',
     data: {
-        premium: true
+        premium: true,
+        cart: []
+    },
+    methods: {
+        updateCart(id) {
+            this.cart.push(id);
+        },
+        deleteCart(id) {
+            this.cart.pop(id);
+        }
     }
 })
+
+
+
