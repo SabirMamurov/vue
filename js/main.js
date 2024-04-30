@@ -234,10 +234,11 @@ Vue.component('product-tabs', {
         <div v-show="selectedTab === 'Reviews'">
             <p v-if="!reviews.length">There are no reviews yet.</p>
             <ul>
-               <li v-for="review in reviews" >
-                  <p>{{ review.name }}</p>
-                  <p>Rating:{{ review.rating }}</p>
-                  <p>{{ review.review }}</p>
+               <li v-for="review in reviews">
+                    <p>{{ review.name }}</p>
+                    <p>Rating: {{ review.rating }}</p>
+                    <p>{{ review.review }}</p>
+                    <textarea v-model="review.comment" placeholder="Напишите комментарий..."></textarea>
                 </li>
             </ul>
         </div>
