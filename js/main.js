@@ -71,7 +71,15 @@ Vue.component('product', {
             sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
             cart: 0,
             selectedVariant: 0,
-            reviews: [],
+            reviews: [
+                {
+                    name: 'John Doe',
+                    rating: 4,
+                    review: 'Great product!',
+                    comment: '',
+                    isSaved: false
+                },
+            ],
         }
     },
     methods: {
@@ -90,6 +98,7 @@ Vue.component('product', {
             this.selectedVariant = index;
             console.log(index);
         },
+
     },
     mounted() {
         eventBus.$on('review-submitted', productReview => {
@@ -234,11 +243,17 @@ Vue.component('product-tabs', {
         <div v-show="selectedTab === 'Reviews'">
             <p v-if="!reviews.length">There are no reviews yet.</p>
             <ul>
-               <li v-for="review in reviews">
+                <li v-for="(review, index) in reviews" :key="index">
                     <p>{{ review.name }}</p>
                     <p>Rating: {{ review.rating }}</p>
                     <p>{{ review.review }}</p>
+                    <div v-if="!review.isSaved">
                     <textarea v-model="review.comment" placeholder="Напишите комментарий..."></textarea>
+                    <button @click="saveComment(index)">Сохранить комментарий</button>
+                    </div>
+                    <div v-else>
+                         <p>{{ review.comment }}</p>
+                    </div>
                 </li>
             </ul>
         </div>
@@ -258,6 +273,7 @@ Vue.component('product-tabs', {
       </div>
     
     `,
+
     data() {
         return {
             tabs: ['Reviews', 'Make a Review','Shipping', 'Details'],
@@ -265,6 +281,15 @@ Vue.component('product-tabs', {
             reverse: false,
             search: "",
         }
+    },
+    methods: {
+        // ... other methods ...
+        saveComment(index) {
+            const review = this.reviews[index];
+            localStorage.setItem(`comment-${index}`, review.comment);
+            review.isSaved = true;
+        },
+        // ... other methods ...
     },
 })
 
@@ -289,6 +314,7 @@ Vue.component('detail-tabs', {
         </div>
       </div>
     `,
+
     data() {
         return {
             tabs: ['Shipping', 'Details'],
